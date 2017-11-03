@@ -44,9 +44,9 @@ class DTN:
         self.current_request = None
 
     def get_next_request(self):
-		self.current_request_index += 1
-		self.current_request = self.requests[self.current_request_index]
-		return self.current_request
+        self.current_request_index += 1
+        self.current_request = self.requests[self.current_request_index]
+        return self.current_request
 
     def __str__(self):
     	return self.name
@@ -74,13 +74,13 @@ class Config:
         if sites != None:
             self.sites= sites
     def save(self, config_file):
-        f = open(config_file,"w")
+        f = open(config_file,"wb")
         pickle.dump(obj=self,file=f)
         f.close()
 
 
 def get_config(config_file):
-	f = open(config_file)
+	f = open(config_file, "rb")
 	conf = pickle.load(f)
 	f.close()
 	return conf
@@ -170,20 +170,20 @@ class Coordinator(threading.Thread):
 			start_time = time.time()
 			new_requests = self.get_next_requests()
 			if len(new_requests) > 0:
-				print new_requests
+				print(new_requests)
 				new_flows, rejected_flows, updated_flows = self.scheduler.sched(new_requests)
-				print new_flows, rejected_flows, updated_flows
+				print(new_flows, rejected_flows, updated_flows)
 				tr = 0
 				for f in new_flows:
 					tr += f[1]
-				print "total", tr/1000/1000
+				print("total", tr/1000/1000)
 			end_time = time.time()
 			time_to_sleep = 1.0 - (end_time - start_time)
 			if (time_to_sleep < 0):
-				print "Cannot keep up with processing an epoch"
+				print("Cannot keep up with processing an epoch")
 			else:
 				time.sleep (time_to_sleep)
-		print "Request simulation is stopped."
+		print("Request simulation is stopped.")
 
 
 class SingleFileGen:
@@ -216,19 +216,21 @@ class SingleFileGen:
 
 	@staticmethod
 	def save(file_name, reqs):
-		f = open (file_name,"w")
+		f = open (file_name,"wb")
 		pickle.dump(reqs, f)
 		f.close()
 
 	@staticmethod
 	def load(file_name, dtns):
-		f = open (file_name)
+		f = open (file_name, "rb")
+		print("file_name", file_name)
 		reqs =  pickle.load(f)
 		f.close()
 		reqs_per_dtn = zip(*reqs)
 		dtn_index = 0
+		reqs_per_dtn=[x for x in reqs_per_dtn]
 		for dtn in dtns:
-			dtn.requests = list(reqs_per_dtn[dtn_index])
+			dtn.requests = list(reqs_per_dtn)[dtn_index]
 			dtn_index += 1
 		return reqs
 
@@ -259,8 +261,8 @@ class FlowUpdate(Resource):
 
 	def put(self, filename):
 		args = FlowUpdate.parser.parse_args()
-		print "TEST", args == None
-		print "ARGS", args
+		print("TEST", args == None)
+		print("ARGS", args)
 		return {'result': filename}
 
 class CoordApp:
@@ -291,7 +293,7 @@ class CoordApp:
 		return "current requests"
 
 	def update_flow (self, src, completion, rate):
-		print "Update from",src,"completion",completion,"rate",rate
+		print("Update from",src,"completion",completion,"rate",rate)
 
 
 

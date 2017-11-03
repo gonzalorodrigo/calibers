@@ -41,7 +41,7 @@ class Scheduler:
         elif self.algo == 'ljf':
             temp_flows.sort(key=lambda x: x.remain_data, reverse=False)
         else:
-            print "invalid algo"
+            print("invalid algo")
 
         #xx = 0
         #for ff in self.flows:
@@ -61,12 +61,12 @@ class Scheduler:
                 #this last flow don't take its whole slack, just take enough to reach RMin for new flow
                 self.flows[f.flow_id].set_rate((self.flows[f.flow_id].Rmin + (temp_sum - new_f.Rmin)),self.t_now)
                 if self.debug == True:
-                    print "after pacing: flow",f.flow_id," Ralloc: ",self.flows[f.flow_id].Ralloc," te ",self.flows[f.flow_id].te
+                    print("after pacing: flow",f.flow_id," Ralloc: ",self.flows[f.flow_id].Ralloc," te ",self.flows[f.flow_id].te)
 
                 new_f.set_rate(new_f.Rmin,self.t_now)
                 self.flows[new_f.flow_id] = new_f
                 if self.debug == True:
-                    print "Success, the flow was assigned rate of ", new_f.Ralloc," Rmin ",new_f.Rmin," te ",new_f.te
+                    print("Success, the flow was assigned rate of ", new_f.Ralloc," Rmin ",new_f.Rmin," te ",new_f.te)
                 self.new_flows_temp[new_f.flow_id] = (new_f.src,new_f.Ralloc)
                 #self.new_flows.append((new_f.src,new_f.Ralloc))
                 #xx = 0
@@ -80,7 +80,7 @@ class Scheduler:
                 
         #if we reached here, then we cannot pace flows and get Rmin for the new flow
         if self.debug == True:
-            print "Reject, no available bandwidth even with pacing"
+            print("Reject, no available bandwidth even with pacing")
         self.reject_count = self.reject_count + 1
         self.revert_flow_changes(involved_flows)
         self.rejected_flows.append((new_f.src,new_f.Ralloc))
@@ -101,7 +101,7 @@ class Scheduler:
         for f in self.flows:
             if self.check_flow_completed(f) == True:
                 if self.debug == True:
-                    print "flow",f, " finished"
+                    print("flow",f, " finished")
                 #delete the flow id from the links involved
             else:
                 current_flows[f] = self.flows[f]
@@ -118,7 +118,7 @@ class Scheduler:
         elif self.algo == 'ljf':
             involved_flows.sort(key=lambda x: x.remain_data, reverse=True)
         else:
-            print "invalid algo"
+            print("invalid algo")
 
         #give all resid bandwidth to the flow with LJ or SJ
         temp_sum = 0
@@ -130,7 +130,7 @@ class Scheduler:
             reshaped_flow = involved_flows[0].flow_id # will take the first flow in the list 
             self.flows[reshaped_flow].set_rate(self.flows[reshaped_flow].Ralloc + Rresid,self.t_now)
             if self.debug == True:
-                print "flow",reshaped_flow ,"reshaped. Ralloc = ",self.flows[reshaped_flow].Ralloc," te = ",self.flows[reshaped_flow].te
+                print("flow",reshaped_flow ,"reshaped. Ralloc = ",self.flows[reshaped_flow].Ralloc," te = ",self.flows[reshaped_flow].te)
             self.updated_flows_temp[reshaped_flow] = (self.flows[reshaped_flow].src,self.flows[reshaped_flow].Ralloc)
 
         #xx = 0
@@ -142,7 +142,7 @@ class Scheduler:
     def sched(self,requests):
         self.t_now = self.t_now + self.epoch
         if self.debug == True:
-            print "\nt_now = ", self.t_now
+            print("\nt_now = ", self.t_now)
         
         # re-initialize the list for the new epoch requests
         self.updated_flows = [] #tuple of source and new rate
@@ -169,7 +169,7 @@ class Scheduler:
             self.no_request = self.no_request + 1
             new_f = flow(self.no_request,req.size,req.td,req.src,req.dst,self.t_now) # the new flow to schedul
             if self.debug == True:
-                print "new request: flow",new_f.flow_id," size ",req.size,"Rmin",new_f.Rmin," td ", req.td," src,dst ",req.src,req.dst
+                print("new request: flow",new_f.flow_id," size ",req.size,"Rmin",new_f.Rmin," td ", req.td," src,dst ",req.src,req.dst)
 
             # find Rresidual bandwidth in the path p
             temp_sum = 0
@@ -185,7 +185,7 @@ class Scheduler:
                 self.flows[new_f.flow_id] = new_f
                 
                 if self.debug == True:
-                    print "Success, flow has been scheduled with rate ",new_f.Ralloc," te = ",new_f.te
+                    print("Success, flow has been scheduled with rate ",new_f.Ralloc," te = ",new_f.te)
                 self.success_count = self.success_count + 1
 
 
